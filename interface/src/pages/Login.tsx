@@ -1,6 +1,17 @@
 import GoogleLoginButton from '../components/GoogleLoginButton';
+import { UseAuth } from '../context/AuthContext';
 
 const Login = () => {
+	const { signWithGoogle } = UseAuth();
+
+	const handleLogin = async () => {
+		try {
+			await signWithGoogle();
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-200 py-12 px-4 sm:px-6 lg:px-8">
 			<div className="max-w-md w-full space-y-8">
@@ -23,7 +34,7 @@ const Login = () => {
 						</p>
 					</section>
 
-					<GoogleLoginButton />
+					<GoogleLoginButton onClick={handleLogin} isLoading={false} />
 
 					<footer className="mt-6">
 						<p className="mt-1 text-sm text-gray-600">
