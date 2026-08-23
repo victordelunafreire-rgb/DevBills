@@ -1,21 +1,33 @@
+import { ArrowUp, Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Card from '../components/Card';
 import MonthYearSelect from '../components/MonthYearSelect';
-import { api } from '../services/api';
+import { getTransactionSummary } from '../services/transactionService';
+import type { TransactionSummary } from '../types/transactions';
+import { formatCurrency } from '../utils/formaters';
+
+const initialSummary: TransactionSummary = {
+	balance: 0,
+	totalExpenses: 0,
+	totalIncomes: 0,
+	expensesByCategory: [],
+};
 
 const Dashboard = () => {
 	const currentDate = new Date();
 	const [year, setYear] = useState<number>(currentDate.getFullYear());
 	const [month, setMonth] = useState(currentDate.getMonth() + 1);
+	const [summary, setSummary] = useState<TransactionSummary>(initialSummary);
 
 	useEffect(() => {
-		async function getTransactions() {
-			const response = await api.get('/transactions');
+		async function loadTransactionsSummary() {
+			const response = await getTransactionSummary(month, year);
 
-			console.log(response);
+			setSummary(response);
 		}
 
-		getTransactions();
-	}, []);
+		loadTransactionsSummary();
+	}, [month, year]);
 
 	return (
 		<div className="container-app py-6">
@@ -27,6 +39,40 @@ const Dashboard = () => {
 					onMonthChange={setMonth}
 					onYearChange={setYear}
 				/>
+			</div>
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<Card
+					icon={<Wallet size={20} className="text-primary-500" />}
+					title="Saldo"
+					hover
+					glowEffect={summary.balance > 0}
+				>
+					<p
+						className={`text-2xl font-semibold mt-2
+					${summary.balance > 0 ? 'text-primary-500' : 'text-red-300'}
+					`}
+					>
+						{formatCurrency(summary.balance)}
+					</p>
+				</Card>
+				<Card
+					icon={<ArrowUp size={20} className="text-primary-500" />}
+					title="Receitas"
+					hover
+				>
+					<p className="text-2xl font-semibold mt-2 text-primary-500">
+						{formatCurrency(summary.totalIncomes)}
+					</p>
+				</Card>
+				<Card
+					icon={<Wallet size={20} className="text-red-600" />}
+					title="Despesas"
+					hover
+				>
+					<p className="text-2xl font-semibold mt-2 text-red-600">
+						{formatCurrency(summary.totalExpenses)}
+					</p>
+				</Card>
 			</div>
 		</div>
 	);
