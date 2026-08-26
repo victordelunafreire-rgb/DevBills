@@ -806,6 +806,11 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.2.tgz#78d476333d85d5b1c792e257bca74ba080da49a4"
   integrity sha512-b1UQwcEZ4yCnMCD8DAL1VlbvBJE9/IX4FTIp7BG1xYpf29SLazLSrqUkj4w7Y5y7cCVP6E5tcqqcI0xemPkHug==
 
+"@recharts/devtools@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@recharts/devtools/-/devtools-0.0.18.tgz#5da856d9b2f2fc49c221205ef3c02e9dff1347e9"
+  integrity sha512-8+jKlYvL8dh5cW3l+wuAPw6IS6ua3mHqgazWsk0QjeEYP5VwVWasyOgk7OONLss9CGIBWFLTIXHn9noMVRFKmA==
+
 "@reduxjs/toolkit@^1.9.0 || 2.x.x":
   version "2.12.0"
   resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-2.12.0.tgz#e62787503a38561e04bb8f39e29ca8db689590f9"

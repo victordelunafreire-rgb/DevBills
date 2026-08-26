@@ -1,12 +1,26 @@
-import { ArrowUp, TrendingUp, Wallet } from 'lucide-react';
+import { ArrowUp, Calendar, TrendingUp, Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { PieLabelRenderProps } from 'recharts';
-import { Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Legend,
+	Pie,
+	PieChart,
+	ResponsiveContainer,
+	Tooltip,
+	XAxis,
+	YAxis,
+} from 'recharts';
 import Card from '../components/Card';
 import MonthYearSelect from '../components/MonthYearSelect';
-import { getTransactionSummary } from '../services/transactionService';
+import {
+	getTransactionSummary,
+	getTransactionsMonthly,
+} from '../services/transactionService';
 import type { CategorySummary } from '../types/category';
-import type { TransactionSummary } from '../types/transactions';
+import type { MonthlyItem, TransactionSummary } from '../types/transactions';
 import { formatCurrency } from '../utils/formaters';
 
 type ChartLabelProps = Omit<PieLabelRenderProps, 'payload'> & {
@@ -25,6 +39,7 @@ const Dashboard = () => {
 	const [year, setYear] = useState<number>(currentDate.getFullYear());
 	const [month, setMonth] = useState(currentDate.getMonth() + 1);
 	const [summary, setSummary] = useState<TransactionSummary>(initialSummary);
+	const [monthlyItemsData, setMonthlyItemsData] = useState<MonthlyItem[]>([]);
 
 	useEffect(() => {
 		async function loadTransactionsSummary() {
@@ -34,6 +49,17 @@ const Dashboard = () => {
 		}
 
 		loadTransactionsSummary();
+	}, [month, year]);
+
+	useEffect(() => {
+		async function loadTransactionsMonthly() {
+			const response = await getTransactionsMonthly(month, year);
+
+			console.log(response);
+			setMonthlyItemsData(response.record);
+		}
+
+		loadTransactionsMonthly();
 	}, [month, year]);
 
 	const renderPieChartLabel = ({
@@ -46,6 +72,14 @@ const Dashboard = () => {
 	const formatToolTipeValue = (value: unknown): string => {
 		return formatCurrency(typeof value === 'number' ? value : 0);
 	};
+
+	const formatAxisValue = (value: unknown): string =>
+		new Intl.NumberFormat('pt-br', {
+			style: 'currency',
+			currency: 'BRL',
+			notation: 'compact',
+			maximumFractionDigits: 1,
+		}).format(typeof value === 'number' ? value : 0);
 
 	const chartData = summary.expensesByCategory.map((item) => ({
 		...item,
@@ -127,6 +161,67 @@ const Dashboard = () => {
 							Nenhuma entrada registrada nesse período
 						</div>
 					)}
+				</Card>
+				<Card
+					icon={<Calendar size={20} className="text-primary-500" />}
+					title="Histórico Mensal"
+					className="min-h-80"
+					hover
+				>
+					<div className="h-72 mt-4">
+						{monthlyItemsData.length > 0 ? (
+							<BarChart
+								style={{
+									width: '100%',
+									maxWidth: '700px',
+									maxHeight: '70vh',
+									aspectRatio: 1.618,
+								}}
+								responsive
+								data={monthlyItemsData}
+								margin={{
+									top: 5,
+									right: 0,
+									left: 0,
+									bottom: 5,
+								}}
+							>
+								<CartesianGrid
+									strokeDasharray="3 3"
+									stroke="rgba(255, 255, 255, 0.1)"
+								/>
+								<XAxis
+									dataKey="name"
+									stroke="#94a3b8"
+									tick={{ style: { textTransform: 'capitalize' } }}
+								/>
+								<YAxis
+									width={82}
+									tickFormatter={formatAxisValue}
+									stroke="#94a3b8"
+								/>
+								<Tooltip
+									formatter={formatToolTipeValue}
+									contentStyle={{
+										backgroundColor: '#1a1a1a',
+										borderColor: '#2a2a2a',
+									}}
+									labelStyle={{ color: '#f8f8f8', textTransform: 'capitalize' }}
+								/>
+								<Legend />
+								<Bar dataKey="income" fill="#37E359" radius={[10, 10, 0, 0]} />
+								<Bar
+									dataKey="expenses"
+									fill="#FF6384"
+									radius={[10, 10, 0, 0]}
+								/>
+							</BarChart>
+						) : (
+							<div className="flex items-center justify-center h-64 text-gray-500">
+								Nenhuma entrada registrada nesse período
+							</div>
+						)}
+					</div>
 				</Card>
 			</div>
 		</div>
