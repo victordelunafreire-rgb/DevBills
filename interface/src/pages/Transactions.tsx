@@ -8,11 +8,15 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { toast } from 'react-toastify';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import MonthYearSelect from '../components/MonthYearSelect';
-import { getTransactions } from '../services/transactionService';
+import {
+	deleteTransaction,
+	getTransactions,
+} from '../services/transactionService';
 import { type Transaction, TransactionType } from '../types/transactions';
 import { formatCurrency, formatDate } from '../utils/formaters';
 
@@ -33,13 +37,32 @@ const Transactions = () => {
 			setTransactions(data);
 			console.log(data);
 		} catch (err) {
+			console.error(err);
 			setError('Não foi possível carregar as trasnsações, tente novamente');
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const handleDelete = (id: string): void => {};
+	const handleDelete = async (id: string): Promise<void> => {
+		try {
+			setDeletingId(id);
+			await deleteTransaction(id);
+			toast.success('Transação deletada com sucesso!');
+			setTransactions((prev) => prev.filter((t) => t.id !== id));
+		} catch (err) {
+			console.error(err);
+			toast.error('Falha ao deletar transação');
+		} finally {
+			setDeletingId('');
+		}
+	};
+
+	const confirmDelete = (id: string): void => {
+		if (window.confirm('Tem certeza que deseja deletar essa transação?')) {
+			handleDelete(id);
+		}
+	};
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
@@ -103,7 +126,7 @@ const Transactions = () => {
 					</div>
 				) : (
 					<div className="overflow-x-auto">
-						<table className="divide-y divide-gray-700 min-h-full">
+						<table className="divide-y divide-gray-700 min-h-full w-full">
 							<thead>
 								<tr>
 									<th
@@ -141,7 +164,7 @@ const Transactions = () => {
 							<tbody className="divide-y divide-gray-700">
 								{transactions.map((transaction) => (
 									<tr key={transaction.id} className="hover:bg-gray-800">
-										<td className="px-6 py-4 text-gray-400 whitespace-nowrap">
+										<td className="px-3 py-4 text-gray-400 whitespace-nowrap">
 											<div className="flex items-center">
 												<div className="mr-2">
 													{transaction.type === TransactionType.INCOME ? (
@@ -156,11 +179,11 @@ const Transactions = () => {
 											</div>
 										</td>
 
-										<td className="px-6 py-4 whitespace-nowrap">
+										<td className="px-3 py-4 whitespace-nowrap">
 											{formatDate(transaction.date)}
 										</td>
 
-										<td className="px-6 py-4 whitespace-nowrap">
+										<td className="px-3 py-4 whitespace-nowrap">
 											<div className="flex items-center">
 												<div
 													className="w-2 h-2 rounded-full mr-2"
@@ -174,7 +197,7 @@ const Transactions = () => {
 											</div>
 										</td>
 
-										<td className="px-6 py-4 whitespace-nowrap">
+										<td className="px-3 py-4 whitespace-nowrap">
 											<span
 												className={`${transaction.type === TransactionType.INCOME ? 'text-primary-500' : 'text-red-500'}`}
 											>
@@ -182,10 +205,10 @@ const Transactions = () => {
 											</span>
 										</td>
 
-										<td className="px-6 py-4 whitespace-nowrap">
+										<td className="px-3 py-4 whitespace-nowrap">
 											<button
 												type="button"
-												onClick={() => handleDelete(transaction.id)}
+												onClick={() => confirmDelete(transaction.id)}
 												className="text-red-500 hover:text-red-400 rounded-full  cursor-pointer"
 												disabled={deletingId === transaction.id}
 											>
