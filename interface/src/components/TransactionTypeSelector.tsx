@@ -31,8 +31,6 @@ const TransactionTypeSelector = ({
 	return (
 		<div>
 			<fieldset id={id} className="grid grid-cols-2 gap-4">
-				<legend>Tipo de Transação</legend>
-
 				{transactionTypeButtons.map((item) => (
 					<button
 						key={item.type}
