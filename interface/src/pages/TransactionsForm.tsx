@@ -7,14 +7,19 @@ import {
 	useState,
 } from 'react';
 import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import TransactionTypeSelector from '../components/TransactionTypeSelector';
 import { getCategories } from '../services/categoryServices';
+import { createTransaction } from '../services/transactionService';
 import type { Category } from '../types/category';
-import { TransactionType } from '../types/transactions';
+import {
+	type CreateTransactionDTO,
+	TransactionType,
+} from '../types/transactions';
 
 interface FormData {
 	description: string;
@@ -82,16 +87,32 @@ const TransactionsForm = () => {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const handleSubmit = (event: SubmitEvent<HTMLFormElement>): void => {
+	const handleSubmit = async (
+		event: SubmitEvent<HTMLFormElement>,
+	): Promise<void> => {
 		event.preventDefault();
+		setError(null);
 
 		try {
 			if (!validateForm()) {
 				return;
 			}
-		} catch (err) {}
 
-		console.log(event);
+			const transactionData: CreateTransactionDTO = {
+				description: formData.description,
+				amount: formData.amount,
+				categoryId: formData.categoryId,
+				type: formData.type,
+				date: new Date(formData.date).toISOString(),
+			};
+
+			await createTransaction(transactionData);
+			toast.success('Transação adicionada com sucesso!');
+			navigate('/transações');
+		} catch (err) {
+			toast.error('Falha ao adicionar transação');
+			console.error(err);
+		}
 	};
 
 	const handleCancel = () => {
