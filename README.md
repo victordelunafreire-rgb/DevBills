@@ -2,6 +2,8 @@
 
 Aplicação full stack de controle financeiro pessoal. Você entra com sua conta Google, registra receitas e despesas por categoria e acompanha o mês num dashboard com saldo, gastos por categoria e um histórico dos últimos meses.
 
+![Dashboard do DevBills](docs/dashboard.png)
+
 ## ✨ Funcionalidades
 
 - **Login com Google** via Firebase Authentication
@@ -15,6 +17,12 @@ Aplicação full stack de controle financeiro pessoal. Você entra com sua conta
 - **Categorias padrão** (Alimentação, Transporte, Moradia, Salário, Freelance…) criadas automaticamente ao subir a API
 - **Rotas protegidas**: só usuários autenticados acessam dashboard e transações, e cada usuário só vê os próprios dados
 - **Layout responsivo**, com menu mobile
+
+## 🖼️ Telas
+
+| Landing | Login | Transações |
+|---|---|---|
+| ![Landing](docs/landing.png) | ![Login](docs/login.png) | ![Transações](docs/transactions.png) |
 
 ## 🛠️ Tecnologias
 
@@ -187,4 +195,4 @@ Acesse `http://localhost:5173`.
 
 **Victor de Luna Freire**
 
-- GitHub: [@victordelunafreire-rgb](https://github.com/victordelunafreire-rgb)
+- LinkedIn: [Victor de Luna Freire](https://www.linkedin.com/in/victordelunafreire)
